@@ -1,3 +1,5 @@
+#ifdef HEUR_1
+
 #include <iostream>
 #include <vector>
 #include <list>
@@ -255,3 +257,5 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+
+#endif

@@ -1,35 +1,10 @@
-﻿  floodit.cpp
-  test.cpp
-  test2.cpp
-test.obj : error LNK2005: "int pivo" (?pivo@@3HA) already defined in floodit.obj
-test.obj : error LNK2005: "int numero_vertices" (?numero_vertices@@3HA) already defined in floodit.obj
-test.obj : error LNK2005: "int numero_arestas" (?numero_arestas@@3HA) already defined in floodit.obj
-test.obj : error LNK2005: "class std::vector<class std::list<int,class std::allocator<int> >,class std::allocator<class std::list<int,class std::allocator<int> > > > grafo" (?grafo@@3V?$vector@V?$list@HV?$allocator@H@std@@@std@@V?$allocator@V?$list@HV?$allocator@H@std@@@std@@@2@@std@@A) already defined in floodit.obj
-test.obj : error LNK2005: "int numero_cores" (?numero_cores@@3HA) already defined in floodit.obj
-test.obj : error LNK2005: "class std::vector<struct SubsetPair,class std::allocator<struct SubsetPair> > subset" (?subset@@3V?$vector@USubsetPair@@V?$allocator@USubsetPair@@@std@@@std@@A) already defined in floodit.obj
-test.obj : error LNK2005: "class std::vector<int,class std::allocator<int> > cor" (?cor@@3V?$vector@HV?$allocator@H@std@@@std@@A) already defined in floodit.obj
-test.obj : error LNK2005: "int target_colour" (?target_colour@@3HA) already defined in floodit.obj
-test.obj : error LNK2005: "class std::vector<class std::set<int,struct std::less<int>,class std::allocator<int> >,class std::allocator<class std::set<int,struct std::less<int>,class std::allocator<int> > > > adjacencias" (?adjacencias@@3V?$vector@V?$set@HU?$less@H@std@@V?$allocator@H@2@@std@@V?$allocator@V?$set@HU?$less@H@std@@V?$allocator@H@2@@std@@@2@@std@@A) already defined in floodit.obj
-test.obj : error LNK2005: "class std::vector<bool,class std::allocator<bool> > visitado" (?visitado@@3V?$vector@_NV?$allocator@_N@std@@@std@@A) already defined in floodit.obj
-floodit.obj : error LNK2005: _main already defined in floodit.obj
-floodit.obj : error LNK2005: "void __cdecl dfs(int,class std::vector<int,class std::allocator<int> > &)" (?dfs@@YAXHAAV?$vector@HV?$allocator@H@std@@@std@@@Z) already defined in floodit.obj
-floodit.obj : error LNK2005: "int __cdecl flood(int,int)" (?flood@@YAHHH@Z) already defined in floodit.obj
-floodit.obj : error LNK2005: "void __cdecl uniao(int,int)" (?uniao@@YAXHH@Z) already defined in floodit.obj
-floodit.obj : error LNK2005: "void __cdecl group_up(int,int)" (?group_up@@YAXHH@Z) already defined in floodit.obj
-test2.obj : error LNK2005: "int pivo" (?pivo@@3HA) already defined in floodit.obj
-test2.obj : error LNK2005: "int numero_vertices" (?numero_vertices@@3HA) already defined in floodit.obj
-test2.obj : error LNK2005: "int numero_arestas" (?numero_arestas@@3HA) already defined in floodit.obj
-test2.obj : error LNK2005: "class std::vector<class std::list<int,class std::allocator<int> >,class std::allocator<class std::list<int,class std::allocator<int> > > > grafo" (?grafo@@3V?$vector@V?$list@HV?$allocator@H@std@@@std@@V?$allocator@V?$list@HV?$allocator@H@std@@@std@@@2@@std@@A) already defined in floodit.obj
-test2.obj : error LNK2005: "int numero_cores" (?numero_cores@@3HA) already defined in floodit.obj
-test2.obj : error LNK2005: "class std::vector<struct SubsetPair,class std::allocator<struct SubsetPair> > subset" (?subset@@3V?$vector@USubsetPair@@V?$allocator@USubsetPair@@@std@@@std@@A) already defined in floodit.obj
-test2.obj : error LNK2005: "class std::vector<int,class std::allocator<int> > cor" (?cor@@3V?$vector@HV?$allocator@H@std@@@std@@A) already defined in floodit.obj
-test2.obj : error LNK2005: "int target_colour" (?target_colour@@3HA) already defined in floodit.obj
-test2.obj : error LNK2005: "class std::vector<class std::set<int,struct std::less<int>,class std::allocator<int> >,class std::allocator<class std::set<int,struct std::less<int>,class std::allocator<int> > > > adjacencias" (?adjacencias@@3V?$vector@V?$set@HU?$less@H@std@@V?$allocator@H@2@@std@@V?$allocator@V?$set@HU?$less@H@std@@V?$allocator@H@2@@std@@@2@@std@@A) already defined in floodit.obj
-test2.obj : error LNK2005: "class std::vector<bool,class std::allocator<bool> > visitado" (?visitado@@3V?$vector@_NV?$allocator@_N@std@@@std@@A) already defined in floodit.obj
-floodit.obj : error LNK2005: _main already defined in floodit.obj
-floodit.obj : error LNK2005: "void __cdecl dfs(int,class std::vector<int,class std::allocator<int> > &)" (?dfs@@YAXHAAV?$vector@HV?$allocator@H@std@@@std@@@Z) already defined in floodit.obj
-floodit.obj : error LNK2005: "int __cdecl flood(int,int)" (?flood@@YAHHH@Z) already defined in floodit.obj
-test.obj : error LNK2005: "int __cdecl flood_aux(int,int)" (?flood_aux@@YAHHH@Z) already defined in test.obj
-floodit.obj : error LNK2005: "void __cdecl uniao(int,int)" (?uniao@@YAXHH@Z) already defined in floodit.obj
-floodit.obj : error LNK2005: "void __cdecl group_up(int,int)" (?group_up@@YAXHH@Z) already defined in floodit.obj
-C:\Users\Pichau\Documents\Visual Studio 2017\Projects\floodit\Release\floodit.exe : fatal error LNK1169: one or more multiply defined symbols found
+﻿  max_mesma_cor.cpp
+max_mesma_cor.cpp(214): warning C4018: '<': signed/unsigned mismatch
+max_mesma_cor.cpp(285): warning C4018: '<': signed/unsigned mismatch
+max_mesma_cor.cpp(288): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  123 of 920 functions (13.4%) were compiled, the rest were copied from previous compilation.
+    117 functions were new in current compilation
+    57 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  floodit.vcxproj -> C:\Users\Pichau\Documents\Visual Studio 2017\Projects\floodit\Release\floodit.exe

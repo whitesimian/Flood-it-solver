@@ -1,3 +1,7 @@
+#define HEUR_2
+
+#ifdef HEUR_2
+
 #include <iostream>
 #include <vector>
 #include <list>
@@ -32,21 +36,20 @@ struct SubsetPair {
 
 int numero_vertices, numero_arestas, numero_cores, pivo, target_colour;
 vector< list<int> > grafo; // Lista de adjacencias
-vector< set<int> > adjacencias; // Index = vertice pai do conjunto, conteudo = conjuntos adjacentes (pais)
-vector<int> cor;
+vector<int> cor, solution;
 vector<SubsetPair> subset; // Define conjunto de vertices monocromaticos adjacentes
 
 vector<bool> visitado; // DFS
 
 					   //=================================================================================
 
-void group_up(int destination, int source) { // Atualiza adjacencias da area que inunda -> pai do conjunto = 'destination'
-	adjacencias[destination].insert(adjacencias[source].begin(), adjacencias[source].end());
-	for (auto v : adjacencias[source]) { // Para todos os adjacentes ao inundado
-		adjacencias[v].erase(source); // Remove adjacente antigo (inundado)
-		adjacencias[v].insert(destination); // Inclui novo adjacente (nova area formada)
+void group_up(vector< set<int> >& adjacentes, int destination, int source) { // Atualiza adjacencias da area que inunda -> pai do conjunto = 'destination'
+	adjacentes[destination].insert(adjacentes[source].begin(), adjacentes[source].end());
+	for (auto v : adjacentes[source]) { // Para todos os adjacentes ao inundado
+		adjacentes[v].erase(source); // Remove adjacente antigo (inundado)
+		adjacentes[v].insert(destination); // Inclui novo adjacente (nova area formada)
 	}
-	adjacencias[destination].erase(destination); // Remove iguais
+	adjacentes[destination].erase(destination); // Remove iguais
 	cor[destination] = target_colour; // Colore o conjunto
 }
 
@@ -80,38 +83,38 @@ void uniao(int v1, int v2) { // Une grupos de acordo com rank
 
 // --------------------------------------------------------------------------------
 
-int flood_aux(int flooding, int flooded) { // Para evitar repetica na funcao flood
+int flood_aux(vector< set<int> >& adjacentes, int flooding, int flooded) { // Para evitar repetica na funcao flood
 	uniao(flooding, flooded);
 
 	int conj_atual = busca(flooding);
 
 	if (conj_atual != flooding)
-		group_up(flooded, flooding);
+		group_up(adjacentes, flooded, flooding);
 	else
-		group_up(flooding, flooded);
+		group_up(adjacentes, flooding, flooded);
 
 	return conj_atual;
 }
 
-int flood(int cor_inundada, int flooding) {  // Para evitar repetica na funcao flood
-	set<int>::iterator it = adjacencias[flooding].begin();
+int flood(vector< set<int> >& adjacentes, int cor_inundada, int flooding) {
+	set<int>::iterator it = adjacentes[flooding].begin();
 
-	while (it != adjacencias[flooding].end()) {
+	while (it != adjacentes[flooding].end()) {
 		int iter1 = *it;
 		if (cor[iter1] == cor_inundada) { // Area a ser inundada			
-			flooding = flood_aux(flooding, iter1); // Une as duas areas e retorna o conjunto vertice atual
+			flooding = flood_aux(adjacentes, flooding, iter1); // Une as duas areas e retorna o conjunto vertice atual
 
-			set<int>::iterator it2 = adjacencias[iter1].begin(); // Nao alterado na chamada de "group_up"
-			while (it2 != adjacencias[iter1].end()) {
+			set<int>::iterator it2 = adjacentes[iter1].begin(); // Nao alterado na chamada de "group_up"
+			while (it2 != adjacentes[iter1].end()) {
 				int iter2 = *it2;
 				if (cor[iter2] == target_colour) { // Procura pelos vertices de distancia 2 ao pivo que possuem a mesma cor de inundacao
-					flooding = flood_aux(flooding, iter2); // Une as areas e atualiza o vertice pivo
+					flooding = flood_aux(adjacentes, flooding, iter2); // Une as areas e atualiza o vertice pivo
 				}
 
 				advance(it2, 1);
 			}
 
-			it = adjacencias[flooding].begin(); // "flooding" pode ter mudado
+			it = adjacentes[flooding].begin(); // "flooding" pode ter mudado
 			assert(flooding = busca(pivo));
 			continue;
 		}
@@ -136,13 +139,13 @@ void dfs(int vertice, vector<int>& lista_adjacentes) {
 	}
 }
 
-void simulate_flood(int area, int cor_inundada, vector< vector<int> >& colour_count) { // Simula inundacao da "cor_inundada".
-	for (int elem : adjacencias[area]) {
+void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count) { // Simula inundacao da "cor_inundada".
+	for (int elem : adjacentes[area]) {
 		if (elem != busca(pivo)) { // Area diferente da que contem o pivo
 			if (cor[elem] != target_colour)
 				colour_count[cor_inundada][cor[busca(elem)]]++;
 			else
-				simulate_flood(elem, cor_inundada, colour_count); // Quer dizer que uma area adjacente a "elem" tem a mesma cor da area pivo.
+				simulate_flood(adjacentes, elem, cor_inundada, colour_count); // Quer dizer que uma area adjacente a "elem" tem a mesma cor da area pivo.
 		}
 	}
 }
@@ -151,8 +154,10 @@ void simulate_flood(int area, int cor_inundada, vector< vector<int> >& colour_co
 
 int main(int argc, char** argv)
 {
-	ios_base::sync_with_stdio(false);
+	//ios_base::sync_with_stdio(false); 
 	//cin.tie(NULL);
+
+	vector< set<int> > adjacencias, adjacencias_iniciais; // Index = vertice pai do conjunto, conteudo = conjuntos adjacentes (pais)
 
 	ifstream file(argv[1]);
 	if (!file.is_open()) {
@@ -164,6 +169,7 @@ int main(int argc, char** argv)
 	grafo.resize(numero_vertices + 1);
 	cor.resize(numero_vertices + 1);
 	adjacencias.resize(numero_vertices + 1);
+	adjacencias_iniciais.resize(numero_vertices + 1);
 
 	visitado.assign(numero_vertices + 1, false); // Inicia visitados = false
 
@@ -203,14 +209,16 @@ int main(int argc, char** argv)
 		f(1, numero_vertices + 1) {
 			for (auto elem : adj[i])
 				adjacencias[i].insert(busca(elem)); // Popula adjacencias
-		}
+		} 
+
+		f(0, adjacencias.size())
+			adjacencias_iniciais[i].insert(adjacencias[i].begin(), adjacencias[i].end()); // Guarda copia do inicial
 	}
 
 	//================================================================================= FIM DO PRE-PROCESSAMENTO
 
-	// HEURISTICA DE MAXIMIZACAO DE ADJACENCIAS DE MESMA COR
+	// HEURISTICA DE MAXIMIZACAO DE ADJACENCIAS DE MESMA COR -> SOLUCAO INICIAL
 
-	{
 		int grupo_pivo = busca(pivo);
 		vector< vector<int> > colour_count; // Linha = cor a inundar, Coluna = contagem das cores.
 
@@ -239,7 +247,7 @@ int main(int argc, char** argv)
 			}
 
 			for (int area : adjacencias[grupo_pivo])  // Simula inundacao de "area"
-				simulate_flood(area, cor[busca(area)], colour_count);
+				simulate_flood(adjacencias, area, cor[busca(area)], colour_count);
 
 			vector< vector<int> >::iterator choice = max_element(colour_count.begin(), colour_count.end(), 
 				[](const vector<int>& a, const vector<int>& b) { 
@@ -247,13 +255,54 @@ int main(int argc, char** argv)
 				});		// Aponta 'a cor inundada que maximizara' o numero de adjacencias de mesma cor.
 			
 			int cor_escolhida = distance(colour_count.begin(), choice);
-			if (cor_escolhida == 0) // Quando para qualquer cor escolhida a maior qtde de adjacencias de mesma cor for zero, e' porque resta apenas uma area a ser inundada.
-				break;				// max_element pegara a primeira igual a zero (cor 0 -> inexistente)
+			solution.push_back(cor_escolhida);
 
-			grupo_pivo = flood(cor_escolhida, grupo_pivo);
+			if (cor_escolhida == 0) {// Quando para qualquer cor escolhida a maior qtde de adjacencias de mesma cor for zero, e' porque resta apenas uma area a ser inundada.
+									 // max_element pegara a primeira igual a zero (cor 0 -> inexistente)
+				assert(adjacencias[grupo_pivo].size() == 1);
+				solution.push_back(*adjacencias[grupo_pivo].begin()); // Adiciona a ultima cor inundada
+				break;
+			}
+
+			grupo_pivo = flood(adjacencias, cor_escolhida, grupo_pivo);
 
 			assert(busca(pivo) == grupo_pivo);
 		}
+
+	// METAHEURISTICA DE REMOCAO SEQUENCIAL DE CORES DA SOLUCAO INICIAL
+
+		bool final_solution = false;
+		int pos_pop = 0;
+
+		if(passos > 0)
+			while (!final_solution) {
+			subset.clear();
+			f(0, numero_vertices + 1)
+				subset.emplace_back(i, 0); // Reinicia os conjuntos
+
+			adjacencias.clear();
+			adjacencias.resize(numero_vertices + 1);
+			f(0, adjacencias_iniciais.size()) // Copia o estado inicial para "adjacencias"
+				adjacencias[i].insert(adjacencias_iniciais[i].begin(), adjacencias_iniciais[i].end());
+
+			f(0, solution.size()) { // Simula todas as inundacoes retirando um elemento da solucao
+				if (i != pos_pop) // Retira a cor na posicao pos_pop
+					flood(adjacencias, solution[i], busca(pivo));
+			}
+
+			if (adjacencias[busca(pivo)].size() == 0) { // Nao ha' adjacencias 'a area pivo -> Gerou solucao melhorada
+				solution.erase(solution.begin() + pos_pop); // Retira a cor naquela posicao desnecessaria
+				pos_pop = 0; // Retorna ao inicio
+				continue;
+			}
+
+			if (pos_pop == solution.size() - 1) // Chegou 'a ultima cor e nao gerou solucao
+				final_solution = true;
+
+			pos_pop++;
+		}
+
+		passos = min(passos, solution.size()); // Atualiza a quantidade de passos
 
 		chrono::high_resolution_clock::time_point tempo_fim = chrono::high_resolution_clock::now();
 		chrono::duration<double> time_span = chrono::duration_cast< chrono::duration<double> >(tempo_fim - tempo_inicio);
@@ -265,10 +314,10 @@ int main(int argc, char** argv)
 		assert(verifiicacao.size() == 2); // Uniu todas as areas exceto a ultima
 #endif
 
-		cout << "\nNumero estimado de passos: " << passos << "\n"
+		std::cout << "\nNumero estimado de passos: " << passos << "\n"
 			<< "Tempo: " << time_span.count() << " s\n";
-
-	}
-
+		system("pause");
 	return 0;
 }
+
+#endif
