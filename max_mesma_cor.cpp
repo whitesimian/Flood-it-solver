@@ -33,7 +33,7 @@ void uniao(int v1, int v2);
 int flood_aux(vector< set<int> >& adjacentes, int flooding, int flooded);
 int flood(vector< set<int> >& adjacentes, int cor_inundada, int flooding);
 void dfs(int vertice, vector<int>& lista_adjacentes);
-void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count);
+void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count, vector< set<int> >& usados);
 
 struct SubsetPair {
 	int pai;
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 	f(1, numero_vertices + 1)
 		file >> cor[i];
 
-	const vector<int> cor_inicial(cor.begin(), cor.end()); // Guarda copia das cores iniciais
+	const vector<int> cor_vetor_inicial(cor.begin(), cor.end()); // Guarda copia das cores iniciais
 
 	f(0, numero_arestas)
 	{
@@ -134,12 +134,19 @@ int main(int argc, char** argv)
 			colour_count.clear();
 			colour_count.assign(numero_cores + 1, vector<int>(1, 0)); // Matriz com uma coluna de zeros
 
+			set<int> areas_usadas; // Areas ja inseridas
+
 			cores_inicial.clear();
-			for (int area : adjacencias[grupo_pivo])
+			for (int area : adjacencias[grupo_pivo]) {
 				cores_inicial.insert(cor[busca(area)]); // Todas as cores adjacentes 'a area pivo
+				areas_usadas.insert(area);
+			}
+
+			vector< set<int> > areas_usadas_por_cor(numero_cores + 1);
 
 			for (int cor_adj : cores_inicial) { // Para todas as cores adjacentes 'a area pivo
 				colour_count[cor_adj].assign(numero_cores + 1, 0);
+				areas_usadas_por_cor[cor_adj].insert(areas_usadas.begin(), areas_usadas.end());
 
 				set<int>::iterator it = cores_inicial.begin();
 				while (it != cores_inicial.end()) {
@@ -150,8 +157,17 @@ int main(int argc, char** argv)
 				}
 			}
 
-			for (int area : adjacencias[grupo_pivo])  // Simula inundacao de "area"
-				simulate_flood(adjacencias, area, cor[busca(area)], colour_count);
+			vector< set<int> > usadas_copia(numero_cores + 1); // Copia do estado inicial
+			f(0, areas_usadas_por_cor.size())
+				usadas_copia[i].insert(areas_usadas_por_cor[i].begin(), areas_usadas_por_cor[i].end());
+
+			for (int area : adjacencias[grupo_pivo]) {  // Simula inundacao de "area"
+				simulate_flood(adjacencias, area, cor[busca(area)], colour_count, areas_usadas_por_cor);
+				f(0, areas_usadas_por_cor.size()) { // Reinicia areass usadas
+					areas_usadas_por_cor[i].clear();
+					areas_usadas_por_cor[i].insert(usadas_copia[i].begin(), usadas_copia[i].end());
+				}
+			}
 
 			vector< vector<int> >::iterator choice = max_element(colour_count.begin(), colour_count.end(), 
 				[](const vector<int>& a, const vector<int>& b) { 
@@ -186,7 +202,7 @@ int main(int argc, char** argv)
 
 		if (passos > 0) {
 			while (!final_solution) {
-				copy(cor_inicial.begin(), cor_inicial.end(), cor.begin()); // Reinicia vetor de cores
+				copy(cor_vetor_inicial.begin(), cor_vetor_inicial.end(), cor.begin()); // Reinicia vetor de cores
 				copy(subset_inicial.begin(), subset_inicial.end(), subset.begin()); // Reinicia o vetor de conjuntos
 				grupo_pivo = busca(pivo);
 
@@ -335,13 +351,15 @@ void dfs(int vertice, vector<int>& lista_adjacentes) {
 	}
 }
 
-void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count) { // Simula inundacao da "cor_inundada".
+void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count, vector< set<int> >& usados) { // Simula inundacao da "cor_inundada".
 	for (int elem : adjacentes[area]) {
-		if (elem != busca(pivo)) { // Area diferente da que contem o pivo
-			if (cor[elem] != target_colour)
+		if (elem != busca(pivo) && usados[cor[area]].find(elem) == usados[cor[area]].end()) { // Area diferente da que contem o pivo e nao usada por efeito de inundacao daquela cor
+			if (cor[elem] != target_colour) {
 				colour_count[cor_inundada][cor[busca(elem)]]++;
+				usados[cor[area]].insert(elem);
+			}
 			else
-				simulate_flood(adjacentes, elem, cor_inundada, colour_count); // Quer dizer que uma area adjacente a "elem" tem a mesma cor da area pivo.
+				simulate_flood(adjacentes, elem, cor_inundada, colour_count, usados); // Quer dizer que uma area adjacente a "elem" tem a mesma cor da area pivo.
 		}
 	}
 }
