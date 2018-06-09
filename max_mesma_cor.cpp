@@ -159,7 +159,7 @@ void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inun
 
 int main(int argc, char** argv)
 {
-	//ios_base::sync_with_stdio(false); 
+	ios_base::sync_with_stdio(false); 
 	//cin.tie(NULL);
 
 	vector< set<int> > adjacencias; // Index = vertice pai do conjunto, conteudo = conjuntos adjacentes (pais)
@@ -213,33 +213,12 @@ int main(int argc, char** argv)
 	}
 	const vector<SubsetPair> subset_inicial(subset.begin(), subset.end()); // Copia conjuntos iniciais
 
-	/*subset_inicial.resize(numero_vertices + 1);
-	copy(subset.begin(), subset.end(), subset_inicial.begin()); // Copia conjuntos iniciais*/
-
 	f(1, numero_vertices + 1) {
 		for (auto elem : adj[i])
 			adjacencias[i].insert(busca(elem)); // Popula adjacencias
 	} 
 
-	/*cout << "Adjacencias iniciais ===:\n";
-	f(0, adjacencias.size()) {
-		cout << i << ": ";
-		for (int elem : adjacencias[i])
-			cout << elem << " ";
-		cout << "\n";
-	}*/
-
 	const vector< set<int> > adjacencias_iniciais(adjacencias.begin(), adjacencias.end()); // Guarda copia do inicial
-	/*f(0, adjacencias.size())
-		adjacencias_iniciais[i].insert(adjacencias[i].begin(), adjacencias[i].end()); // Guarda copia do inicial*/
-
-	/*cout << "Adjacencias iniciais ==========:\n"; // THIS IS FUCKING RIGHT
-	f(0, adjacencias_iniciais.size()) {
-		cout << i << ": ";
-		for (int elem : adjacencias_iniciais[i])
-			cout << elem << " ";
-		cout << "\n";
-	}*/
 
 	//================================================================================= FIM DO PRE-PROCESSAMENTO
 
@@ -284,12 +263,6 @@ int main(int argc, char** argv)
 			if(cor_escolhida != 0)
 				solution.push_back(cor_escolhida);
 
-			/*cout << "\n";
-			f(1, subset.size()) {
-				cout << subset[i].pai << " ";
-			}
-			cout << "\n\n";*/
-
 			if (cor_escolhida == 0) {// Quando para qualquer cor escolhida a maior qtde de adjacencias de mesma cor for zero, e' porque resta apenas uma area a ser inundada.
 									 // max_element pegara a primeira igual a zero (cor 0 -> inexistente)
 				int ultima_cor = cor[*adjacencias[grupo_pivo].begin()];
@@ -307,32 +280,8 @@ int main(int argc, char** argv)
 
 	// METAHEURISTICA DE REMOCAO SEQUENCIAL DE CORES DA SOLUCAO INICIAL
 
-		/*cout << "Adjacencias iniciais:\n";
-		f(0, adjacencias_iniciais.size()) {
-			cout << i << ": ";
-			for (int elem : adjacencias_iniciais[i])
-				cout << elem << " ";
-			cout << "\n";
-		}
-
-		copy(subset_inicial.begin(), subset_inicial.end(), subset.begin());
-
-		cout << "pivo: " << busca(pivo) << "\n\n\n";
-		f(1, subset_inicial.size()) {
-			cout << subset_inicial[i].pai << " ";
-		}
-		cout << "\n\n";
-		f(1, numero_vertices + 1) {
-			cout << cor[i] << " ";
-		}
-		cout << "\n\n";*/
-
 		bool final_solution = false;
 		int pos_pop = 0;
-
-		/*f(0, solution.size())
-			std::cout << solution[i] << " ";
-		cout << "\n";*/
 
 		if (passos > 0) {
 			while (!final_solution) {
@@ -345,55 +294,22 @@ int main(int argc, char** argv)
 				f(0, adjacencias_iniciais.size()) // Copia o estado inicial para "adjacencias"
 					adjacencias[i].insert(adjacencias_iniciais[i].begin(), adjacencias_iniciais[i].end());
 
-				/*cout << "Adjacencias:\n";
-				f(0, adjacencias.size()) {
-					for (int elem : adjacencias[i])
-						cout << elem << " ";
-					cout << "\n";
-				}
-				cout << "\n";*/
-
+				bool solucao_viavel = false;
 				f(0, solution.size()) { // Simula todas as inundacoes retirando um elemento da solucao
 					if (i != pos_pop) { // Retira a cor na posicao pos_pop
 						grupo_pivo = flood(adjacencias, solution[i], grupo_pivo);
-
-						/*cout << "Inundou cor " << solution[i] << ", pivo:" << grupo_pivo << ", Adjacencias:\n";
-						f(0, adjacencias.size()) {
-							cout << i << ": ";
-							for (int elem : adjacencias[i])
-								cout << elem << " ";
-							cout << "\n";
+						if (adjacencias[busca(pivo)].size() == 0) {
+							solution.resize(i + 1); // Retira o resto das cores (nao utilizadas para gerar a solucao viavel)
+							solution.erase(solution.begin() + pos_pop); // Retira a cor naquela posicao desnecessaria
+							pos_pop = 0; // Retorna ao inicio
+							solucao_viavel = true;
+							break;
 						}
-						cout << "\n";
-						f(1, subset.size()) {
-							cout << subset[i].pai << " ";
-						}
-						cout << "\n\n";*/
 					}
 				}
 
-				/*cout << "Adjacencias:\n";
-				f(0, adjacencias.size()) {
-					cout << i << ": ";
-					for (int elem : adjacencias[i])
-						cout << elem << " ";
-					cout << "\n";
-				}
-				cout <<"pivo: " << busca(pivo) << "\n";*/
-
-				/*cout << "Retirou o " << solution[pos_pop] << ": ";
-				f(0, subset.size())
-					cout << subset[i].pai << " ";
-				cout << "\n";*/
-
-				if (adjacencias[busca(pivo)].size() == 0) { // Nao ha' adjacencias 'a area pivo -> Gerou solucao melhorada
-					solution.erase(solution.begin() + pos_pop); // Retira a cor naquela posicao desnecessaria
-					pos_pop = 0; // Retorna ao inicio
-					/*f(0, solution.size())
-						cout << solution[i] << " ";
-					cout << "\n";*/
+				if (solucao_viavel)
 					continue;
-				}
 
 				if (pos_pop == solution.size() - 1) // Chegou 'a ultima cor e nao gerou solucao
 					final_solution = true;
@@ -416,8 +332,8 @@ int main(int argc, char** argv)
 
 		cout << "\nNumero estimado de passos: " << passos << "\n"
 			<< "Tempo: " << time_span.count() << " s\n";
-		system("pause");
-	return 0;
+
+	exit(EXIT_SUCCESS);
 }
 
 #endif
