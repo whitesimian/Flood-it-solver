@@ -177,6 +177,8 @@ int main(int argc, char** argv)
 			assert(busca(pivo) == grupo_pivo);
 		}
 
+		assert(passos == solution.size());
+
 	// METAHEURISTICA DE REMOCAO SEQUENCIAL DE CORES DA SOLUCAO INICIAL
 
 		bool final_solution = false;
@@ -217,7 +219,7 @@ int main(int argc, char** argv)
 			}
 		}
 
-		passos = min(passos, solution.size()); // Atualiza a quantidade de passos
+		passos = solution.size(); // Atualiza a quantidade de passos
 
 		chrono::high_resolution_clock::time_point tempo_fim = chrono::high_resolution_clock::now();
 		chrono::duration<double> time_span = chrono::duration_cast< chrono::duration<double> >(tempo_fim - tempo_inicio);
