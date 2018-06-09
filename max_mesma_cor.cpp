@@ -27,6 +27,14 @@
 
 using namespace std;
 
+void group_up(vector< set<int> >& adjacentes, int destination, int source);
+inline int busca(int vertice);
+void uniao(int v1, int v2);
+int flood_aux(vector< set<int> >& adjacentes, int flooding, int flooded);
+int flood(vector< set<int> >& adjacentes, int cor_inundada, int flooding);
+void dfs(int vertice, vector<int>& lista_adjacentes);
+void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count);
+
 struct SubsetPair {
 	int pai;
 	int rank;
@@ -45,115 +53,6 @@ vector<int> cor, solution;
 vector<SubsetPair> subset; // Define conjunto de vertices monocromaticos adjacentes
 
 vector<bool> visitado; // DFS
-
-					   //=================================================================================
-
-void group_up(vector< set<int> >& adjacentes, int destination, int source) { // Atualiza adjacencias da area que inunda -> pai do conjunto = 'destination'
-	adjacentes[destination].insert(adjacentes[source].begin(), adjacentes[source].end());
-	for (auto v : adjacentes[source]) { // Para todos os adjacentes ao inundado
-		adjacentes[v].erase(source); // Remove adjacente antigo (inundado)
-		adjacentes[v].insert(destination); // Inclui novo adjacente (nova area formada)
-	}
-	adjacentes[destination].erase(destination); // Remove iguais
-	cor[destination] = target_colour; // Colore o conjunto
-}
-
-// --------------------------------------------------------------------------------
-
-// Union-Find (Disjoint Set By Rank And Path Compression) -> Une vertices em um mesmo conjunto
-
-inline int busca(int vertice) { // Small constant -> O(log n) Pior Caso
-	if (subset[vertice].pai != vertice)
-		subset[vertice].pai = busca(subset[vertice].pai); // Compressao de caminhos no subconjunto
-	return subset[vertice].pai; // Retorna pai atualizado
-}
-
-void uniao(int v1, int v2) { // Une grupos de acordo com rank
-	int grupo1 = busca(v1);
-	int grupo2 = busca(v2);
-
-	if (grupo1 != grupo2)
-	{
-		if (subset[grupo1].rank < subset[grupo2].rank)
-			subset[grupo1].pai = grupo2;
-		else if (subset[grupo1].rank > subset[grupo2].rank)
-			subset[grupo2].pai = grupo1;
-		else
-		{
-			subset[grupo1].pai = grupo2;
-			subset[grupo2].rank++;
-		}
-	}
-}
-
-// --------------------------------------------------------------------------------
-
-int flood_aux(vector< set<int> >& adjacentes, int flooding, int flooded) { // Para evitar repetica na funcao flood
-	uniao(flooding, flooded);
-
-	int conj_atual = busca(flooding);
-
-	if (conj_atual != flooding)
-		group_up(adjacentes, flooded, flooding);
-	else
-		group_up(adjacentes, flooding, flooded);
-
-	return conj_atual;
-}
-
-int flood(vector< set<int> >& adjacentes, int cor_inundada, int flooding) {
-	set<int>::iterator it = adjacentes[flooding].begin();
-
-	while (it != adjacentes[flooding].end()) {
-		int iter1 = *it;
-		if (cor[iter1] == cor_inundada) { // Area a ser inundada			
-			flooding = flood_aux(adjacentes, flooding, iter1); // Une as duas areas e retorna o conjunto vertice atual
-
-			set<int>::iterator it2 = adjacentes[iter1].begin(); // Nao alterado na chamada de "group_up"
-			while (it2 != adjacentes[iter1].end()) {
-				int iter2 = *it2;
-				if (cor[iter2] == target_colour) { // Procura pelos vertices de distancia 2 ao pivo que possuem a mesma cor de inundacao
-					flooding = flood_aux(adjacentes, flooding, iter2); // Une as areas e atualiza o vertice pivo
-				}
-
-				advance(it2, 1);
-			}
-
-			it = adjacentes[flooding].begin(); // "flooding" pode ter mudado
-			assert(flooding = busca(pivo));
-			continue;
-		}
-		advance(it, 1);
-	}
-
-	return flooding; // Area pivo atual
-}
-
-void dfs(int vertice, vector<int>& lista_adjacentes) {
-	visitado[vertice] = true;
-
-	for (auto elem : grafo[vertice]) {
-		if (cor[elem] == cor[vertice]) {
-			if (!visitado[elem]) {
-				uniao(elem, vertice);
-				dfs(elem, lista_adjacentes);
-			}
-		}
-		else
-			lista_adjacentes.push_back(elem);
-	}
-}
-
-void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count) { // Simula inundacao da "cor_inundada".
-	for (int elem : adjacentes[area]) {
-		if (elem != busca(pivo)) { // Area diferente da que contem o pivo
-			if (cor[elem] != target_colour)
-				colour_count[cor_inundada][cor[busca(elem)]]++;
-			else
-				simulate_flood(adjacentes, elem, cor_inundada, colour_count); // Quer dizer que uma area adjacente a "elem" tem a mesma cor da area pivo.
-		}
-	}
-}
 
 //=================================================================================
 
@@ -334,6 +233,115 @@ int main(int argc, char** argv)
 			<< "Tempo: " << time_span.count() << " s\n";
 
 	exit(EXIT_SUCCESS);
+}
+
+//=================================================================================
+
+void group_up(vector< set<int> >& adjacentes, int destination, int source) { // Atualiza adjacencias da area que inunda -> pai do conjunto = 'destination'
+	adjacentes[destination].insert(adjacentes[source].begin(), adjacentes[source].end());
+	for (auto v : adjacentes[source]) { // Para todos os adjacentes ao inundado
+		adjacentes[v].erase(source); // Remove adjacente antigo (inundado)
+		adjacentes[v].insert(destination); // Inclui novo adjacente (nova area formada)
+	}
+	adjacentes[destination].erase(destination); // Remove iguais
+	cor[destination] = target_colour; // Colore o conjunto
+}
+
+// --------------------------------------------------------------------------------
+
+// Union-Find (Disjoint Set By Rank And Path Compression) -> Une vertices em um mesmo conjunto
+
+inline int busca(int vertice) { // Small constant -> O(log n) Pior Caso
+	if (subset[vertice].pai != vertice)
+		subset[vertice].pai = busca(subset[vertice].pai); // Compressao de caminhos no subconjunto
+	return subset[vertice].pai; // Retorna pai atualizado
+}
+
+void uniao(int v1, int v2) { // Une grupos de acordo com rank
+	int grupo1 = busca(v1);
+	int grupo2 = busca(v2);
+
+	if (grupo1 != grupo2)
+	{
+		if (subset[grupo1].rank < subset[grupo2].rank)
+			subset[grupo1].pai = grupo2;
+		else if (subset[grupo1].rank > subset[grupo2].rank)
+			subset[grupo2].pai = grupo1;
+		else
+		{
+			subset[grupo1].pai = grupo2;
+			subset[grupo2].rank++;
+		}
+	}
+}
+
+// --------------------------------------------------------------------------------
+
+int flood_aux(vector< set<int> >& adjacentes, int flooding, int flooded) { // Para evitar repetica na funcao flood
+	uniao(flooding, flooded);
+
+	int conj_atual = busca(flooding);
+
+	if (conj_atual != flooding)
+		group_up(adjacentes, flooded, flooding);
+	else
+		group_up(adjacentes, flooding, flooded);
+
+	return conj_atual;
+}
+
+int flood(vector< set<int> >& adjacentes, int cor_inundada, int flooding) {
+	set<int>::iterator it = adjacentes[flooding].begin();
+
+	while (it != adjacentes[flooding].end()) {
+		int iter1 = *it;
+		if (cor[iter1] == cor_inundada) { // Area a ser inundada			
+			flooding = flood_aux(adjacentes, flooding, iter1); // Une as duas areas e retorna o conjunto vertice atual
+
+			set<int>::iterator it2 = adjacentes[iter1].begin(); // Nao alterado na chamada de "group_up"
+			while (it2 != adjacentes[iter1].end()) {
+				int iter2 = *it2;
+				if (cor[iter2] == target_colour) { // Procura pelos vertices de distancia 2 ao pivo que possuem a mesma cor de inundacao
+					flooding = flood_aux(adjacentes, flooding, iter2); // Une as areas e atualiza o vertice pivo
+				}
+
+				advance(it2, 1);
+			}
+
+			it = adjacentes[flooding].begin(); // "flooding" pode ter mudado
+			assert(flooding = busca(pivo));
+			continue;
+		}
+		advance(it, 1);
+	}
+
+	return flooding; // Area pivo atual
+}
+
+void dfs(int vertice, vector<int>& lista_adjacentes) {
+	visitado[vertice] = true;
+
+	for (auto elem : grafo[vertice]) {
+		if (cor[elem] == cor[vertice]) {
+			if (!visitado[elem]) {
+				uniao(elem, vertice);
+				dfs(elem, lista_adjacentes);
+			}
+		}
+		else
+			lista_adjacentes.push_back(elem);
+	}
+}
+
+void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count) { // Simula inundacao da "cor_inundada".
+	for (int elem : adjacentes[area]) {
+		if (elem != busca(pivo)) { // Area diferente da que contem o pivo
+			if (cor[elem] != target_colour)
+				colour_count[cor_inundada][cor[busca(elem)]]++;
+			else
+				simulate_flood(adjacentes, elem, cor_inundada, colour_count); // Quer dizer que uma area adjacente a "elem" tem a mesma cor da area pivo.
+		}
+	}
 }
 
 #endif
