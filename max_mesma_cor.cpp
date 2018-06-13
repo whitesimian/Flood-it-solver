@@ -24,6 +24,7 @@
 #define f(inicio, fim) for(int i = inicio; i < fim; i++)
 #define print(container) for(auto elem : container) cout << elem << " "
 //#define VERIFY
+//#define _PRINT_INITIAL_SOLUTION
 
 using namespace std;
 
@@ -121,7 +122,7 @@ int main(int argc, char** argv)
 
 	//================================================================================= FIM DO PRE-PROCESSAMENTO
 
-	// HEURISTICA DE MAXIMIZACAO DE ADJACENCIAS DE MESMA COR -> SOLUCAO INICIAL
+	// HEURISTICA DE MAXIMIZACAO DE ADJACENCIAS EXTRAS DE MESMA COR -> SOLUCAO INICIAL
 
 		int grupo_pivo = busca(pivo);
 		vector< vector<int> > colour_count; // Linha = cor a inundar, Coluna = contagem das cores.
@@ -139,22 +140,23 @@ int main(int argc, char** argv)
 
 			cores_inicial.clear();
 			for (int area : adjacencias[grupo_pivo]) {
-				cores_inicial.insert(cor[busca(area)]); // Todas as cores adjacentes 'a area pivo
+				cores_inicial.insert(cor[area]); // Todas as cores adjacentes 'a area pivo
 				areas_usadas.insert(area);
+				assert(area == busca(area));
 			}
 
 			vector< set<int> > areas_usadas_por_cor(numero_cores + 1); // Vetor de conjunto de areas ja contadas por cada cor (index)
 
+			/*Inicia vetores de contagem de cores para cada cor adjacente 
+			e faz a contagem inicial (cores adjacentes iniciais).
+			Para estas areas, a contagem de cores nao e' por frequencia.*/
 			for (int cor_adj : cores_inicial) { // Para todas as cores adjacentes 'a area pivo
 				colour_count[cor_adj].assign(numero_cores + 1, 0);
 				areas_usadas_por_cor[cor_adj].insert(areas_usadas.begin(), areas_usadas.end());
 
-				set<int>::iterator it = cores_inicial.begin();
-				while (it != cores_inicial.end()) {
-					int pos = *it;
-					if (pos != cor_adj) // Uma cor nao e' adjacente a ela mesma
-						colour_count[cor_adj][pos]++;
-					advance(it, 1);
+				for (int cor_ini : cores_inicial) {
+					if(cor_ini != cor_adj) // Uma cor nao e' adjacente a ela mesma
+						colour_count[cor_adj][cor_ini]++;
 				}
 			}
 
@@ -164,7 +166,7 @@ int main(int argc, char** argv)
 
 			for (int area : adjacencias[grupo_pivo]) {  // Simula inundacao de "area"
 				simulate_flood(adjacencias, area, cor[busca(area)], colour_count, areas_usadas_por_cor);
-				f(0, numero_cores + 1) { // Reinicia areass usadas
+				f(0, numero_cores + 1) { // Reinicia areas usadas
 					areas_usadas_por_cor[i].clear();
 					areas_usadas_por_cor[i].insert(usadas_copia[i].begin(), usadas_copia[i].end());
 				}
@@ -179,7 +181,7 @@ int main(int argc, char** argv)
 			if(cor_escolhida != 0)
 				solution.push_back(cor_escolhida);
 
-			if (cor_escolhida == 0) {// Quando para qualquer cor escolhida a maior qtde de adjacencias de mesma cor for zero, e' porque resta apenas uma area a ser inundada.
+			else { // cor_escolhida == 0 : Quando para qualquer cor escolhida a maior qtde de adjacencias de mesma cor for zero, e' porque resta apenas uma area a ser inundada.
 									 // max_element pegara a primeira igual a zero (cor 0 -> inexistente)
 				int ultima_cor = cor[*adjacencias[grupo_pivo].begin()];
 				for(int elem : adjacencias[grupo_pivo])
@@ -197,7 +199,11 @@ int main(int argc, char** argv)
 
 		assert(passos == solution.size());
 
-	// METAHEURISTICA DE REMOCAO SEQUENCIAL DE CORES DA SOLUCAO INICIAL
+#ifdef _PRINT_INITIAL_SOLUTION
+		cout << "\nSolucao inicial: " << passos << "\n";
+#endif
+
+	// METAHEURISTICA DE REMOCAO SEQUENCIAL DE CORES DA SOLUCAO INICIAL (Descent, First Improvement)
 
 		bool final_solution = false;
 		int pos_pop = 0;
