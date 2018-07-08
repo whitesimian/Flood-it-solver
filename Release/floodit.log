@@ -1,9 +1,9 @@
 ﻿  max_mesma_cor.cpp
-max_mesma_cor.cpp(215): warning C4018: '<': signed/unsigned mismatch
-max_mesma_cor.cpp(219): warning C4018: '<': signed/unsigned mismatch
+max_mesma_cor.cpp(220): warning C4018: '<': signed/unsigned mismatch
+max_mesma_cor.cpp(224): warning C4018: '<': signed/unsigned mismatch
   Generating code
-  18 of 988 functions ( 1.8%) were compiled, the rest were copied from previous compilation.
-    5 functions were new in current compilation
-    16 functions had inline decision re-evaluated but remain unchanged
+  8 of 988 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    14 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   floodit.vcxproj -> C:\Users\Pichau\Documents\Visual Studio 2017\Projects\floodit\Release\floodit.exe

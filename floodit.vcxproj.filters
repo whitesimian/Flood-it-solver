@@ -15,18 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="floodit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="max_escolhas_floodit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="max_mesma_cor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
