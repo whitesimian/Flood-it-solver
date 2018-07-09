@@ -39,5 +39,5 @@ Given the initial solution (sequence of chosen colours), I try to remove steps t
 - Number of edges (E).
 - Number of colours (C).
 - Pivot vertex (P).
-- N numbers representing the colour of each vertex (first number is the colour of the first vertex and so on).
-- E lines representing each one of the edges (each line contains two numbers of vertices representing an edge between them).
+- **N** numbers representing the colour of each vertex (first number is the colour of the first vertex and so on).
+- **E** lines representing each one of the edges (each line contains two numbers of vertices representing an edge between them).
