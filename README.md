@@ -33,3 +33,11 @@ Given the initial solution (sequence of chosen colours), I try to remove steps t
 - If the remaining sequence dos not generate a viable solution, step back to the previous viable solution and remove the next colour.
 - If the remaining sequance generates a viable solution, remove permanently the colour at that index of the solution and all the steps ahead not used.
 - If the position of the colour to be removed of the solution exceeds the end, end the heuristic and adopt the current viable solution as the final one.
+
+## Input format
+- Number of vertices (N).
+- Number of edges (E).
+- Number of colours (C).
+- Pivot vertex (P).
+- N numbers representing the colour of each vertex (first number is the colour of the first vertex and so on).
+- E lines representing each one of the edges (each line contains two numbers of vertices representing an edge between them).
