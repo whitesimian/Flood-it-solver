@@ -26,7 +26,7 @@ This seems a naïve approach, but it generates a pretty decent initial solution.
 
 ### Descent, First Improvement Heuristic
 
-Given the initial solution (sequence of chosen colours), I try to remove steps to improve the solution (less steps).
+Given the initial solution (sequence of chosen colours), I try to remove steps to improve the solution.
 
 #### Algorithm:
 - Remove the first colour of the solution.
