@@ -14,7 +14,7 @@ I find a initial solution and try to improve it by using a descent and first imp
 
 ### Initial solution
 
-At each step (chosing a colour to flood), it is chosen the colour that maximizes the number of new adjacent area of the same colour.
+At each step (chosing a colour to flood), it is chosen the colour that maximizes the number of new adjacent areas of the same colour.
 #### Example: 
 - If I choose colour RED to flood I'll have 3 new adjacent areas of colour YELLOW and 5 new BLACK.
 - If I choose colour BLACK to flood I'll have 1 new adjacent areas of colour YELLOW and 7 new RED.
