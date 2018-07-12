@@ -8,7 +8,7 @@ This project was made for the "Graph Theory" course at UFOP, JUL/2018.
 - Always flooding (not flooded), i.e., the graph ends with the same colour as the initial pivot.
 - Colours identifiers start at 1.
 
-## The ideia
+## The idea
 
 I find a initial solution and try to improve it by using a descent and first improvement heuristic.
 
@@ -17,7 +17,7 @@ I find a initial solution and try to improve it by using a descent and first imp
 At each step (chosing a colour to flood), it is chosen the colour that maximizes the number of new adjacent areas of the same colour.
 #### Example: 
 - If I choose colour RED to flood I'll have 3 new adjacent areas of colour YELLOW and 5 new BLACK.
-- If I choose colour BLACK to flood I'll have 1 new adjacent areas of colour YELLOW and 7 new RED.
+- If I choose colour BLACK to flood I'll have 1 new adjacent area of colour YELLOW and 7 new RED.
 
 Then I choose colour BLACK, because 7 > 5.
 Besides that, it is not completely ignored the existing adjacent areas. Except that, instead of counting the frequency of these initial adjacent areas, they are counted as 1, regardless of how many colours RED or YELLOW are adjacent to the pivot area.
@@ -26,7 +26,7 @@ This seems a naïve approach, but it generates a pretty decent initial solution.
 
 ### Descent, First Improvement Heuristic
 
-Given the initial solution (sequence of chosen colours), I try to remove steps to improve the solution.
+Given the initial solution (sequence of chosen colours), I try to remove steps to improve it.
 
 #### Algorithm:
 - Remove the first colour of the solution.
