@@ -30,8 +30,8 @@ Given the initial solution (sequence of chosen colours), I try to remove steps t
 
 #### Algorithm:
 - Remove the first colour of the solution.
-- If the remaining sequence dos not generate a viable solution, step back to the previous viable solution and remove the next colour.
-- If the remaining sequance generates a viable solution, remove permanently the colour at that index of the solution and all the steps ahead not used.
+- If the remaining sequence does not generate a viable solution, step back to the previous viable solution and remove the next colour.
+- If the remaining sequence generates a viable solution, remove permanently the colour at that index of the solution and all the steps ahead not used.
 - If the position of the colour to be removed of the solution exceeds the end, end the heuristic and adopt the current viable solution as the final one.
 
 ## Input format
