@@ -11,15 +11,14 @@
 #include <cassert>
 
 /*
-* === CONSIDERA«’ES ===
+* === CONSIDERA√á√ïES ===
 * Grafo conexo.
-* Cores no intervalo de 1 a n˙mero de cores.
+* Cores no intervalo de 1 a n√∫mero de cores.
 * As areas se juntam em uma area com a cor do vertice pivo.
 */
 
 #define f(inicio, fim) for(int i = inicio; i < fim; i++)
 #define print(container) for(auto elem : container) cout << elem << " "
-//#define VERIFY
 #define _PRINT_INITIAL_SOLUTION
 
 using namespace std;
@@ -71,9 +70,9 @@ int main(int argc, char** argv)
 	f(1, numero_vertices + 1)
 		file >> cor[i];
 
-	const vector<int> cor_vetor_inicial(cor.begin(), cor.end()); // Guarda cÛpia das cores iniciais
+	const vector<int> cor_vetor_inicial(cor.begin(), cor.end()); // Guarda c√≥pia das cores iniciais
 
-	// Entrada em uma lista de adjacÍncias
+	// Entrada em uma lista de adjac√™ncias
 	f(0, numero_arestas)
 	{
 		int v1, v2;
@@ -95,8 +94,8 @@ int main(int argc, char** argv)
 	adj.resize(numero_vertices + 1);
 	vector<int> foo;
 
-	// Recolhe todos os vÈrtices atÙmicos adjacentes a cada uma das ·reas visitadas (pos).	
-	// A DFS une os vÈrtices atÙmicos adjacentes de mesma cor em um mesmo conjunto (subset).
+	// Recolhe todos os v√©rtices at√¥micos adjacentes a cada uma das √°reas visitadas (pos).	
+	// A DFS une os v√©rtices at√¥micos adjacentes de mesma cor em um mesmo conjunto (subset).
 	f(1, numero_vertices + 1) { // O(n + m)
 		if (!visitado[i]) {
 			foo.clear();
@@ -107,18 +106,18 @@ int main(int argc, char** argv)
 	}
 	const vector<SubsetPair> subset_inicial(subset.begin(), subset.end()); // Copia conjuntos iniciais
 
-	// Recolhe todos os vÈrtices ·rea adjacentes a todos os outros
+	// Recolhe todos os v√©rtices √°rea adjacentes a todos os outros
 	// Vetor de conjuntos
-	f(1, numero_vertices + 1) { // Para todas os vÈrtices ·rea
+	f(1, numero_vertices + 1) { // Para todas os v√©rtices √°rea
 		for (auto elem : adj[i])
 			adjacencias[i].insert(busca(elem)); // Popula adjacencias
 	} 
 
-	const vector< set<int> > adjacencias_iniciais(adjacencias.begin(), adjacencias.end()); // Guarda cÛpia das adjacÍncias iniciais
+	const vector< set<int> > adjacencias_iniciais(adjacencias.begin(), adjacencias.end()); // Guarda c√≥pia das adjac√™ncias iniciais
 
 	//================================================================================= FIM DO PRE-PROCESSAMENTO
 
-	// HEURÕSTICA DE MAXIMIZA«√O DE ADJAC NCIAS EXTRAS DE MESMA COR COM CONSIDERA«√O PARCIAL DAS J¡ EXISTENTES-> SOLU«√O INICIAL
+	// HEUR√çSTICA DE MAXIMIZA√á√ÉO DE ADJAC√äNCIAS EXTRAS DE MESMA COR COM CONSIDERA√á√ÉO PARCIAL DAS J√Å EXISTENTES-> SOLU√á√ÉO INICIAL
 
 	int grupo_pivo = busca(pivo);
 	vector< vector<int> > colour_count; // Linha = cor a inundar, Coluna = contagem das cores.
@@ -132,59 +131,59 @@ int main(int argc, char** argv)
 		colour_count.clear();
 		colour_count.assign(numero_cores + 1, vector<int>(1, 0)); // Matriz com uma coluna de zeros
 
-		set<int> areas_usadas; // ¡reas j· inseridas
+		set<int> areas_usadas; // √Åreas j√° inseridas
 
 		cores_inicial.clear();
-		// Para todas as ·reas adjacentes ‡ ·rea do pivÙ
+		// Para todas as √°reas adjacentes √† √°rea do piv√¥
 		for (int area : adjacencias[grupo_pivo]) {
-			cores_inicial.insert(cor[area]); // Todas as cores adjacentes ‡ area pivÙ
+			cores_inicial.insert(cor[area]); // Todas as cores adjacentes √† area piv√¥
 			areas_usadas.insert(area);
 			assert(area == busca(area));
 		}
 
-		// Para cada cor a ser simulada sua inundaÁ„o, existe um conjunto de ·reas j· consideradas
+		// Para cada cor a ser simulada sua inunda√ß√£o, existe um conjunto de √°reas j√° consideradas
 		vector< set<int> > areas_usadas_por_cor(numero_cores + 1);
 
 		// Inicia vetores de contagem de cores para cada cor adjacente 
 		// e faz a contagem inicial (cores adjacentes iniciais).
 		// Para estas areas, a contagem de cores nao e' por frequencia.
-		for (int cor_adj : cores_inicial) { // Para todas as cores adjacentes ‡ area pivÙ -> todas as cores possÌveis de ser escolhidas
+		for (int cor_adj : cores_inicial) { // Para todas as cores adjacentes √† area piv√¥ -> todas as cores poss√≠veis de ser escolhidas
 			colour_count[cor_adj].assign(numero_cores + 1, 0);
-			areas_usadas_por_cor[cor_adj].insert(areas_usadas.begin(), areas_usadas.end()); // Todas as ·reas iniciais j· foram contabilizadas
+			areas_usadas_por_cor[cor_adj].insert(areas_usadas.begin(), areas_usadas.end()); // Todas as √°reas iniciais j√° foram contabilizadas
 
 			for (int cor_ini : cores_inicial) {
-				if(cor_ini != cor_adj) // Uma cor nao È adjacente a ela mesma
+				if(cor_ini != cor_adj) // Uma cor nao √© adjacente a ela mesma
 					colour_count[cor_adj][cor_ini]++;
-					// ConsideraÁ„o parcial das cores adjacentes iniciais (sem contagem de frequÍncia)
+					// Considera√ß√£o parcial das cores adjacentes iniciais (sem contagem de frequ√™ncia)
 					// Conta-se UMA vez todas as cores iniciais.
-					// Para esta cor (cor_ini) que È adjacente ‡ ·rea pivÙ, adiciona-se parcialmente (contagem "qualitativa") todas as cores iniciais.
+					// Para esta cor (cor_ini) que √© adjacente √† √°rea piv√¥, adiciona-se parcialmente (contagem "qualitativa") todas as cores iniciais.
 			}
 		}
 
-		// Simula inundaÁ„o de "·rea".
-		// Relativo ‡ todas as cores iniciais.
+		// Simula inunda√ß√£o de "√°rea".
+		// Relativo √† todas as cores iniciais.
 		for (int area : adjacencias[grupo_pivo]) {
 			simulate_flood(adjacencias, area, cor[busca(area)], colour_count, areas_usadas_por_cor);
 		}
 
-		// Aponta ‡ cor inundada que maximizar· o n˙mero de adjacÍncias de mesma cor.
+		// Aponta √† cor inundada que maximizar√° o n√∫mero de adjac√™ncias de mesma cor.
 		vector< vector<int> >::iterator choice = max_element(colour_count.begin(), colour_count.end(), 
 			[](const vector<int>& a, const vector<int>& b) { 
 				return *max_element(a.begin(), a.end()) < *max_element(b.begin(), b.end());
 			});		
 
-		// A cor È o Ìndice no vetor.
+		// A cor √© o √≠ndice no vetor.
 		int cor_escolhida = distance(colour_count.begin(), choice);
 		if(cor_escolhida != 0)
 			solution.push_back(cor_escolhida);
 
-		else { // cor_escolhida == 0 : Quando para qualquer cor escolhida a maior qtde de adjacÍncias de mesma cor for zero, È porque resta apenas uma ·rea a ser inundada.
+		else { // cor_escolhida == 0 : Quando para qualquer cor escolhida a maior qtde de adjac√™ncias de mesma cor for zero, √© porque resta apenas uma √°rea a ser inundada.
 									// max_element pegara a primeira igual a zero (cor 0 -> inexistente)
 			int ultima_cor = cor[*adjacencias[grupo_pivo].begin()];
 			for(int elem : adjacencias[grupo_pivo])
-				assert(cor[elem] == ultima_cor); // As cores das ˙ltimas adjacÍncias s„o iguais (resta apenas uma cor).
+				assert(cor[elem] == ultima_cor); // As cores das √∫ltimas adjac√™ncias s√£o iguais (resta apenas uma cor).
 
-			solution.push_back(ultima_cor); // Adiciona a ˙ltima cor inundada ‡ soluÁ„o.
+			solution.push_back(ultima_cor); // Adiciona a √∫ltima cor inundada √† solu√ß√£o.
 			initial_solution_found = true;
 			continue;
 		}
@@ -246,13 +245,6 @@ int main(int argc, char** argv)
 		chrono::high_resolution_clock::time_point tempo_fim = chrono::high_resolution_clock::now();
 		chrono::duration<double> time_span = chrono::duration_cast< chrono::duration<double> >(tempo_fim - tempo_inicio);
 
-#ifdef VERIFY
-		set<int> verifiicacao;
-		f(1, numero_vertices + 1)
-			verifiicacao.insert(busca(i));
-		assert(verifiicacao.size() == 2); // Uniu todas as areas exceto a ultima
-#endif
-
 		cout << "\nNumero estimado de passos: " << passos << "\n"
 			<< "Tempo: " << time_span.count() << " s\n";
 
@@ -309,8 +301,8 @@ int flood_aux(vector< set<int> >& adjacentes, int flooding, int flooded) { // Pa
 	if (uniao(flooding, flooded)) {
 		int conj_atual = busca(flooding);
 
-		// Varia apenas qual n˙mero (vÈrtice atÙmico) representa a ·rea unida (pivÙ) atual.
-		// O segundo argumento È o n˙mero correspondente ‡ ·rea (pivÙ).
+		// Varia apenas qual n√∫mero (v√©rtice at√¥mico) representa a √°rea unida (piv√¥) atual.
+		// O segundo argumento √© o n√∫mero correspondente √† √°rea (piv√¥).
 		if (conj_atual != flooding)
 			group_up(adjacentes, flooded, flooding);
 		else
@@ -330,20 +322,20 @@ int flood(vector< set<int> >& adjacentes, int cor_inundada, int flooding) {
 
 	while (it != adjacentes[flooding].end()) { // Para todos os adjacentes ao flooding.
 		int iter1 = *it;
-		if (cor[iter1] == cor_inundada && areas_proibidas.find(cor[iter1]) == areas_proibidas.end()) { // ¡rea a ser inundada.		
-			flooding = flood_aux(adjacentes, flooding, iter1); // Une as duas ·reas e retorna o conjunto vÈrtice atual.
+		if (cor[iter1] == cor_inundada && areas_proibidas.find(cor[iter1]) == areas_proibidas.end()) { // √Årea a ser inundada.		
+			flooding = flood_aux(adjacentes, flooding, iter1); // Une as duas √°reas e retorna o conjunto v√©rtice atual.
 
-			set<int>::iterator it2 = adjacentes[iter1].begin(); // N„o alterado na chamada de "group_up".
+			set<int>::iterator it2 = adjacentes[iter1].begin(); // N√£o alterado na chamada de "group_up".
 			while (it2 != adjacentes[iter1].end()) {
 				int iter2 = *it2;
 
-				if (cor[iter2] == target_colour) { // Procura pelos vertices de dist‚ncia 2 ao pivÙ que possuem a mesma cor de inundaÁ„o.
-					// Para evitar que se encadeie inundaÁıes proibidas para apenas uma escolha de cor, j· que o iterador volta ao begin() mais adiante.
+				if (cor[iter2] == target_colour) { // Procura pelos vertices de dist√¢ncia 2 ao piv√¥ que possuem a mesma cor de inunda√ß√£o.
+					// Para evitar que se encadeie inunda√ß√µes proibidas para apenas uma escolha de cor, j√° que o iterador volta ao begin() mais adiante.
 					for (int forb : adjacentes[iter2]) {
-						if (cor[busca(forb)] == cor_inundada && adjacentes[flooding].find(forb) == adjacentes[flooding].end()) // Igual ‡ cor a ser inundada porÈm de dist‚ncia > 1 ‡ ·rea pivÙ.
+						if (cor[busca(forb)] == cor_inundada && adjacentes[flooding].find(forb) == adjacentes[flooding].end()) // Igual √† cor a ser inundada por√©m de dist√¢ncia > 1 √† √°rea piv√¥.
 							areas_proibidas.insert(busca(forb));
 					}
-					flooding = flood_aux(adjacentes, flooding, iter2); // Une as ·reas e atualiza o vÈrtice pivÙ.
+					flooding = flood_aux(adjacentes, flooding, iter2); // Une as √°reas e atualiza o v√©rtice piv√¥.
 				}
 
 				advance(it2, 1);
@@ -356,7 +348,7 @@ int flood(vector< set<int> >& adjacentes, int cor_inundada, int flooding) {
 		advance(it, 1);
 	}
 
-	return flooding; // ¡rea pivÙ atual.
+	return flooding; // √Årea piv√¥ atual.
 }
 
 void dfs(int vertice, vector<int>& lista_adjacentes) {
@@ -375,11 +367,11 @@ void dfs(int vertice, vector<int>& lista_adjacentes) {
 }
 
 void simulate_flood(const vector< set<int> >& adjacentes, int area, int cor_inundada, vector< vector<int> >& colour_count, vector< set<int> >& usados) { // Simula inundacao da "cor_inundada".
-	// Para todas as ·reas adjacentes ‡ "area".
+	// Para todas as √°reas adjacentes √† "area".
 	for (int AREA_ADJACENTE : adjacentes[area]) {
-		if (AREA_ADJACENTE != busca(pivo) && usados[cor_inundada].find(AREA_ADJACENTE) == usados[cor_inundada].end()) { // ¡rea diferente da que contÈm o pivÙ e n„o usada por efeito de inundaÁ„o daquela cor.
-			if (cor[AREA_ADJACENTE] != target_colour) { // Se a cor adjacente (dist‚ncia 2) n„o for igual ‡ cor do pivÙ.
-				colour_count[cor_inundada][cor[busca(AREA_ADJACENTE)]]++; // Contagem de frequÍncia das cores das ·reas adjacentes.
+		if (AREA_ADJACENTE != busca(pivo) && usados[cor_inundada].find(AREA_ADJACENTE) == usados[cor_inundada].end()) { // √Årea diferente da que cont√©m o piv√¥ e n√£o usada por efeito de inunda√ß√£o daquela cor.
+			if (cor[AREA_ADJACENTE] != target_colour) { // Se a cor adjacente (dist√¢ncia 2) n√£o for igual √† cor do piv√¥.
+				colour_count[cor_inundada][cor[busca(AREA_ADJACENTE)]]++; // Contagem de frequ√™ncia das cores das √°reas adjacentes.
 				usados[cor_inundada].insert(AREA_ADJACENTE);
 			}
 			else {
